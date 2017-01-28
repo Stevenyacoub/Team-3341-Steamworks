@@ -28,11 +28,10 @@ GyroL3GD20H::GyroL3GD20H(I2C::Port port, int deviceAddress)
 
 	m_i2c.Write(GYRO_REGISTER_CTRL_REG1, 0x0F);
 
-	xCalibration = 0;
-	yCalibration = 0;
-	zCalibration = 0;
+	float zAxisArray[10] = {};
+	float avg = 0;
 	count = 0;
-	calibrationCount = 0;
+	calibrationcount = 0;
 	sum.setAxis(0,0,0);
 	mState = UNCONNECTED;
 	const unsigned char ADDRESS = 0xF;
@@ -154,9 +153,15 @@ void GyroL3GD20H::initializeGyro()
 
 }
 
+void GyroL3GD20H::calibrateGyrodata(int totalCalibrationCount)
+{
+	readGyroData(true,totalCalibrationCount);
+	avg = sum.getzAxis()/totalCalibrationCount;
+	sum.setAxis(0,0,0);
+}
 
 
-void GyroL3GD20H::readGyroData() //read gyro status, read FIFO source, read GYRO_REGISTER_OUT_X_L
+GyroAxis GyroL3GD20H::readGyroData(bool calibrationMode, int totalCalibrationCount) //read gyro status, read FIFO source, read GYRO_REGISTER_OUT_X_L
 {
 	short data[3];
 	uint8_t registerVal;
@@ -165,9 +170,6 @@ void GyroL3GD20H::readGyroData() //read gyro status, read FIFO source, read GYRO
 	m_i2c.Read(GYRO_REGISTER_STATUS_REG, 1, &status);
 	std::cout << "Status of gyro: " << std::hex << (int)status << std::dec << std::endl;
 
-	//xCalibration = xCalibrateTotal/calibrationCount;
-	//yCalibration = yCalibrateTotal/calibrationCount;
-	//zCalibration = zCalibrateTotal/calibrationCount;
 
 	if(status & ZYXDA) // check for data available
 	{
@@ -182,17 +184,29 @@ void GyroL3GD20H::readGyroData() //read gyro status, read FIFO source, read GYRO
 
 		dataAvailable = (registerVal & FIFOSOURCE_DATA_SAMPLES) + 1;
 
-		for(int i = 0; i < dataAvailable; i++ )
+		if(calibrationMode == true)
 		{
-			m_i2c.Read(GYRO_REGISTER_OUT_X_L | AUTO_INCREMENT, 6, (uint8_t*)data);
-			//std::cout << "Gyro sample data: " << (data[0]) << ", " << (data[1]) << ", " << (data[2]) << std::endl;
-			sum.addAxis(data[0]*conversionFactor, data[1]*conversionFactor, data[2]*conversionFactor);
-			std::cout << "Gyro sum : " << sum.getxAxis()  << ", " << sum.getyAxis() << ", " << sum.getzAxis() << std::endl;
-			count++;
+			for(int i = 0; i < totalCalibrationCount; i++ )
+			{
+				m_i2c.Read(GYRO_REGISTER_OUT_X_L | AUTO_INCREMENT, 6, (uint8_t*)data);
+				gAxis.setAxis(data[0]*conversionFactor, data[1]*conversionFactor, data[2]*conversionFactor);
+				gAxis.overrunofAxis();
+				sum.addAxis(gAxis.getxAxis(), gAxis.getyAxis(), gAxis.getzAxis());
+				count++;
+			}
+		}
+		else if(calibrationMode == false)
+		{
+			for(int i = 0; i < dataAvailable; i++ )
+			{
+				m_i2c.Read(GYRO_REGISTER_OUT_X_L | AUTO_INCREMENT, 6, (uint8_t*)data);
+				sum.addAxis(data[0]*conversionFactor, data[1]*conversionFactor, data[2]*conversionFactor - avg);
+				count++;
+			}
 		}
 
 	}
-
+return sum;
 }
 
 
@@ -225,3 +239,4 @@ std::shared_ptr<ITable> ADXL345_I2C::GetTable() const { return m_table; }**/
 
 
 } /* namespace wvrobotics */
+

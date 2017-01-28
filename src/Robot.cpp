@@ -10,7 +10,13 @@
 #include <SmartDashboard/SmartDashboard.h>
 #include "Utilities/NetworkTablesInterface.h"
 
+#include "Subsystems/GyroL3GD20H.h"
+
 class Robot: public frc::IterativeRobot {
+
+private:
+	wvrobotics::GyroL3GD20H* gyro;
+	wvrobotics::GyroAxis axis;
 public:
 	void RobotInit() override {
 		//chooser.AddDefault("Default Auto", new ExampleCommand());
@@ -24,6 +30,12 @@ public:
 	 * the robot is disabled.
 	 */
 	void DisabledInit() override {
+		gyro = new wvrobotics::GyroL3GD20H(I2C::kOnboard, 0x6b);
+				gyro->initializeGyro();
+				std::chrono::milliseconds timespan(5000); // 5000 milliseconds can be changed to a certain time
+				//fix the below line of code for thread::sleep_for
+				//std::this_thread::sleep_for(timespan);
+				gyro->calibrateGyrodata(50); //50 is the calibration sample size; can change it as desired
 
 	}
 
@@ -74,6 +86,16 @@ public:
 
 	void TeleopPeriodic() override {
 		frc::Scheduler::GetInstance()->Run();
+
+		static int count = 0;
+				count++;
+				if (count % 8 == 0)
+				{
+					Scheduler::GetInstance()->Run();
+					//methods to read in Gyro Data
+					axis = gyro->readGyroData(false, 0); //calibration mode is false
+					axis.overrunofAxis();
+				}
 	}
 
 	void TestPeriodic() override {

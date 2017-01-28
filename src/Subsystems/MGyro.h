@@ -4,6 +4,7 @@
 #include "Commands/Subsystem.h"
 #include "WPILib.h"
 
+using namespace frc;
 
 class MGyro: public Subsystem
 {

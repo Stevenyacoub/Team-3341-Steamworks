@@ -9,6 +9,8 @@
 #define GYROL3GD20H_H_
 #include "I2C.h"
 #include "GyroAxis.h"
+using namespace frc;
+#include <iostream>
 
 namespace wvrobotics {
 
@@ -98,22 +100,20 @@ private:
 	State mState;
 	I2C m_i2c;
 	int overrunGyroCount;
-	int xCalibration;
-	int yCalibration;
-	int zCalibration;
-	int calibrationCount;
-	int xCalibrateTotal;
-	int yCalibrateTotal;
-	int zCalibrateTotal;
 	int count;
-	GyroAxis sum;
+	GyroAxis sum,gAxis;
+	int calibrationcount;
 	double conversionFactor = 0;
+	float zAxisArray[];
+	float avg = 0;
 
 public:
 	GyroL3GD20H(I2C::Port port, int deviceAddress);
 	virtual ~GyroL3GD20H();
 	void initializeGyro();
-	void readGyroData();
+	void calibrateGyrodata(int totalCalibrationCount);
+	void checkForZAxis(int counterGyro);
+	GyroAxis readGyroData(bool calibrationMode, int totalCalibrationCount);
 	void resetGyro()
 	{
 		sum.setAxis(0,0,0);
