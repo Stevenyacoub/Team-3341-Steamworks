@@ -79,9 +79,11 @@ void NavigateCV::Execute(){
 	gyroVal = drive->getGyroAngle();
 
 	power = distPID->Tick(encoderVal);
+
+
 	angle = anglePID->Tick(gyroVal);
 
-	drive->arcadeDrive(power, angle);
+	drive->arcadeDrive(power/100.0, 0);
 
 }
 
@@ -94,7 +96,6 @@ bool NavigateCV::IsFinished()
 
 void NavigateCV::End()
 {
-	// TODO: STOP THE MOTORS!!!!
 	drive->arcadeDrive(0,0);
 }
 

@@ -2,7 +2,7 @@
 
 #include "../RobotMap.h"
 #include "../CommandBase.h"
-#include "../Commands/ArcadeDrive.h"
+#include "../Commands/TankDrive.h"
 
 #include "DriveTrain.h"
 
@@ -13,12 +13,14 @@ DriveTrain::DriveTrain() :
     encoderLeft(new Encoder(ENCODER_LEFT_1, ENCODER_LEFT_2)),
     encoderRight(new Encoder(ENCODER_RIGHT_1, ENCODER_RIGHT_2)), mult(1.0),
 	ticksToDistance(114), // 112 < ticksToDistance < 117
-	accel(), gyro(new wvrobotics::GyroL3GD20H(I2C::kOnboard, 0x6b))//wvrobotic::GyroL3GD20H( wvrobotics::GyroL3GD20H::GyroL3GD20H))//,
+	accel(),
+	gyro(new wvrobotics::GyroL3GD20H(I2C::kOnboard, 0x6b))//wvrobotic::GyroL3GD20H( wvrobotics::GyroL3GD20H::GyroL3GD20H))//,
 	//ultrasonicSensors()
 {
     encoderLeft->SetDistancePerPulse(1.0);
     encoderRight->SetDistancePerPulse(1.0);
-
+    left->SetInverted(true);
+    right->SetInverted(true);
     //gyro->Calibrate();
     //gyro->Reset();
 }
@@ -30,7 +32,7 @@ DriveTrain::~DriveTrain()
     delete right;
     delete encoderLeft;
     delete encoderRight;
-    delete accel;
+    //delete accel;
     delete gyro;
 }
 
@@ -90,7 +92,28 @@ void DriveTrain::arcadeDrive(float moveValue, float rotateValue)
     float limitedR = -DriveTrain::Limit(rightMotorOutput, 1.0);
 
     left->Set(-limitedL);
-    right->Set(-limitedR);
+    right->Set(-limitedR); //removed negatives
+}
+
+void DriveTrain::tankDrive(float moveValueLeft, float moveValueRight)
+{
+    //float leftMotorOutput;
+    //float rightMotorOutput;
+
+    moveValueLeft = DriveTrain::Limit(moveValueLeft, 1.0);
+    moveValueRight = -DriveTrain::Limit(moveValueRight, 1.0);
+
+    //std::cout << "LeftRaw: " << limitedL<< "\n";
+	//std::cout << "RightRaw: " << limitedR << "\n";
+    // TODO: mult should never be 0, but robot wasn't driving for some reason
+    if (mult != 0) {
+		left->Set(-moveValueLeft);
+		right->Set(-moveValueRight);
+    }
+    else {
+    	left->Set(-moveValueLeft);
+		right->Set(-moveValueRight);
+    }
 }
 
 float DriveTrain::Limit(float num, float max)
@@ -112,7 +135,7 @@ double DriveTrain::getDistance()
     (
         (double) ((encoderLeft->Get()) / ticksToDistance) -
         (double) ((encoderRight->Get()) / ticksToDistance)
-    ) / -2.0;
+    ) / 2.0;
 }
 
 double DriveTrain::getRate()
@@ -123,26 +146,28 @@ double DriveTrain::getRate()
     (
         (double) ((encoderLeft->GetRate()) / ticksToDistance) -
         (double) ((encoderRight->GetRate()) / ticksToDistance)
-    ) / -2.0;
+    ) / 2.0;
 
 }
 
 void DriveTrain::getAccelerations(double* x, double* y, double* z)
 {
-	*x = accel->GetX();
-	*y = accel->GetY();
-	*z = accel->GetZ();
+	//*x = accel->GetX();
+	//*y = accel->GetY();
+	//*z = accel->GetZ();
 }
 
 void DriveTrain::InitDefaultCommand()
 {
-    SetDefaultCommand(new ArcadeDrive());
+    SetDefaultCommand(new TankDrive());
 }
 
 
 double DriveTrain::getLeftEncoderDistance()
 {
+	//TODO negate this and the right one below
 	//return this->left->GetPosition();
+
 	return this->encoderLeft->GetDistance();
 }
 

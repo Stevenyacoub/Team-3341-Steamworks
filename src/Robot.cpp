@@ -9,6 +9,9 @@
 #include <SmartDashboard/SendableChooser.h>
 #include <SmartDashboard/SmartDashboard.h>
 #include "Utilities/NetworkTablesInterface.h"
+#include "Commands/Forward.h"
+#include "Subsystems/DriveTrain.h"
+#include "Commands/AutonomousLeft.h"
 
 #include "Subsystems/GyroL3GD20H.h"
 using namespace frc;
@@ -20,9 +23,14 @@ private:
 	wvrobotics::GyroAxis axis;
 public:
 	void RobotInit() override {
+		CommandBase::initialize();
 		//chooser.AddDefault("Default Auto", new ExampleCommand());
 		// chooser.AddObject("My Auto", new MyAutoCommand());
 		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+		autonomousCommand = new AutonomousLeft();
+		//foreward = new Forward();
+		//left = new Talon(0);
+		//right = new Talon(1);
 	}
 
 	/**
@@ -64,9 +72,9 @@ public:
 			autonomousCommand.reset(new ExampleCommand());
 		} */
 
-		autonomousCommand.reset(chooser.GetSelected());
+		//autonomousCommand.reset(chooser.GetSelected());
 
-		if (autonomousCommand.get() != nullptr) {
+		if (autonomousCommand != nullptr) {
 			autonomousCommand->Start();
 		}
 	}
@@ -87,33 +95,41 @@ public:
 
 	void TeleopPeriodic() override {
 		frc::Scheduler::GetInstance()->Run();
+		frc::SmartDashboard::PutNumber("EncoderTest", CommandBase::drive->getLeftEncoderDistance());
+		frc::SmartDashboard::PutNumber("EncoderRight", CommandBase::drive->getRightEncoderDistance());
+		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
+				frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
+				frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
+				frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
+	}
 
-		static int count = 0;
-				count++;
-				if (count % 8 == 0)
-				{
-					Scheduler::GetInstance()->Run();
-					//methods to read in Gyro Data
-					axis = gyro->readGyroData(false, 0); //calibration mode is false
-					axis.overrunofAxis();
-				}
+	void TestInit() override {
+
+		//foreward->Start();
+		//CommandBase::drive->setSpeedLeft(0.5);
+		//CommandBase::drive->setSpeedRight(-0.5);
+>>>>>>> 4b822945ab8777e3a0ac0954b988d972e0756b8a
 	}
 
 	void TestPeriodic() override {
+		frc::Scheduler::GetInstance()->Run();
 		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
 		frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
 		frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
 		frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
 	    frc::SmartDashboard::PutBoolean("CVBoilerFound", NetworkTablesInterface::boilerFound());
-		//frc::SmartDashboard::PutNumber("CVBoilerDistance",NetworkTablesInterface::getGearDistance());
-		//frc::SmartDashboard::PutNumber("CVBoilerAltitude", NetworkTablesInterface::getGearAltitude());
-		//frc::SmartDashboard::PutNumber("CVBoilerAzimuth", NetworkTablesInterface::getGearAzimuth());
+		frc::SmartDashboard::PutNumber("CVBoilerDistance",NetworkTablesInterface::getBoilerDistance());
+		frc::SmartDashboard::PutNumber("CVBoilerAltitude", NetworkTablesInterface::getBoilerAltitude());
+		frc::SmartDashboard::PutNumber("CVBoilerAzimuth", NetworkTablesInterface::getBoilerAzimuth());
 		frc::LiveWindow::GetInstance()->Run();
 	}
 
 private:
-	std::unique_ptr<frc::Command> autonomousCommand;
+	CommandGroup* autonomousCommand;
 	frc::SendableChooser<frc::Command*> chooser;
+	//Command* foreward;
+	//Talon* left;
+	//Talon* right;
 };
 
 START_ROBOT_CLASS(Robot)
