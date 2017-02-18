@@ -11,6 +11,7 @@
 #include "Utilities/NetworkTablesInterface.h"
 
 #include "Subsystems/GyroL3GD20H.h"
+using namespace frc;
 
 class Robot: public frc::IterativeRobot {
 
