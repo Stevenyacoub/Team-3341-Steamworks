@@ -2,12 +2,13 @@
  * GyroAxis.h
  *
  *  Created on: Dec 6, 2016
- *      Author: nidhi
+ *      Author: Deepali Jain
  */
 
 #ifndef GYROAXIS_H_
 #define GYROAXIS_H_
 #include <iostream>
+#include <math.h>
 
 namespace wvrobotics {
 
@@ -45,6 +46,7 @@ public:
 	void setzAxis(double z)
 	{
 		zAxis = z;
+		//std::cout << "z axis: " << z << std::endl;
 	}
 	void setAxis(double x, double y, double z)
 	{
@@ -92,7 +94,8 @@ public:
 	}
 	void overrunofAxis()
 	 	{
-	 		xAxis = (int)xAxis % 360;
+			xAxis = fmod(xAxis, 360);
+			//xAxis = (int) xAxis%360;
 	 		if(xAxis > 180)
 	 		{
 	 			xAxis -= 360;
@@ -102,17 +105,19 @@ public:
 	 			xAxis += 360;
 	 		}
 
-	 		zAxis = (int)zAxis%360;
+	 		zAxis = fmod(zAxis, 360);
+	 		//zAxis = (int) zAxis % 360;
 	 		if(zAxis > 180)
 	 		{
 	 			zAxis -= 360;
 	 		}
 	 		else if(zAxis < -180)
 	 		{
-	 			zAxis += 360;
+	 			zAxis += 360.0;
 	 		}
 
-	 		yAxis = (int)yAxis%360;
+	 		yAxis = fmod(yAxis, 360);
+	 		//yAxis = (int) yAxis % 360;
 	 		if(yAxis > 180)
 	 		{
 	 			yAxis -= 360;
@@ -122,8 +127,7 @@ public:
 	 			yAxis += 360;
 	 		}
 
-	 		std::cout << "Gyro sum : " << xAxis  << ", " << yAxis << ", " << zAxis << std::endl;
-
+	 		//std::cout << "Gyro sum : " << zAxis << std::endl;
 	 	}
 	~GyroAxis();
 };

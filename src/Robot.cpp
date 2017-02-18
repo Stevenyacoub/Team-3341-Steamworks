@@ -13,20 +13,23 @@
 #include "Subsystems/DriveTrain.h"
 #include "Commands/AutonomousLeft.h"
 
-#include "Subsystems/GyroL3GD20H.h"
+#include "Subsystems/NewGyro.h"
 using namespace frc;
 
 class Robot: public frc::IterativeRobot {
 
 private:
-	wvrobotics::GyroL3GD20H* gyro;
+	wvrobotics::NewGyro* gyro;
 	wvrobotics::GyroAxis axis;
+	int flag = 0;
+	int startupTime=5;
 public:
 	void RobotInit() override {
 		CommandBase::initialize();
 		//chooser.AddDefault("Default Auto", new ExampleCommand());
 		// chooser.AddObject("My Auto", new MyAutoCommand());
 		frc::SmartDashboard::PutData("Auto Modes", &chooser);
+		gyro = new wvrobotics::NewGyro(I2C::kOnboard, 0x6b); //50 is the calibration sample size; can change it as desired
 		autonomousCommand = new AutonomousLeft();
 		//foreward = new Forward();
 		//left = new Talon(0);
@@ -39,17 +42,14 @@ public:
 	 * the robot is disabled.
 	 */
 	void DisabledInit() override {
-		gyro = new wvrobotics::GyroL3GD20H(I2C::kOnboard, 0x6b);
-				gyro->initializeGyro();
-				std::chrono::milliseconds timespan(5000); // 5000 milliseconds can be changed to a certain time
-				//fix the below line of code for thread::sleep_for
-				//std::this_thread::sleep_for(timespan);
-				gyro->calibrateGyrodata(50); //50 is the calibration sample size; can change it as desired
+
+
 
 	}
 
 	void DisabledPeriodic() override {
 		frc::Scheduler::GetInstance()->Run();
+		gyro->periodicProcessing(startupTime);
 	}
 
 	/**
@@ -95,24 +95,25 @@ public:
 
 	void TeleopPeriodic() override {
 		frc::Scheduler::GetInstance()->Run();
+		gyro->periodicProcessing(startupTime);
 		frc::SmartDashboard::PutNumber("EncoderTest", CommandBase::drive->getLeftEncoderDistance());
 		frc::SmartDashboard::PutNumber("EncoderRight", CommandBase::drive->getRightEncoderDistance());
 		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
-				frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
-				frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
-				frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
+		frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
+		frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
+		frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
+
+
 	}
 
 	void TestInit() override {
 
-		//foreward->Start();
-		//CommandBase::drive->setSpeedLeft(0.5);
-		//CommandBase::drive->setSpeedRight(-0.5);
->>>>>>> 4b822945ab8777e3a0ac0954b988d972e0756b8a
+
 	}
 
 	void TestPeriodic() override {
 		frc::Scheduler::GetInstance()->Run();
+		gyro->periodicProcessing(startupTime);
 		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
 		frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
 		frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());

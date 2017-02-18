@@ -2,7 +2,7 @@
  * GyroAxis.cpp
  *
  *  Created on: Dec 6, 2016
- *      Author: nidhi
+ *      Author: Deepali Jain
  */
 
 #include "GyroAxis.h"
