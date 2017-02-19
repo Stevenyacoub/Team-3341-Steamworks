@@ -2,12 +2,14 @@
 #include "TurnAndDrive.h"
 #include "NavigateCV.h"
 #include "../CommandBase.h"
+#include "CVDrive.h"
+
+using namespace std;
 AutonomousLeft::AutonomousLeft(){
 
-	//Requires(drive);
-	AddSequential(new TurnAndDrive(39,0));
-	AddSequential(new TurnAndDrive(0,0.5));
-	//AddSequential(new NavigateCV());
+	//AddSequential(new TurnAndDrive(50,0));
+	AddSequential(new CVDrive());
+	//AddSequential(new Turn(45));
 }
 
 

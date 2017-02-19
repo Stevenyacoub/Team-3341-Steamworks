@@ -67,7 +67,7 @@ void NewGyro::periodicProcessing(int startupTime)
 		if(isVerified == false)
 		{
 			mState=UNCONNECTED;
-			std::cout << "gyro state " << mState << std::endl;
+			//std::cout << "gyro state " << mState << std::endl;
 		}
 		//subtract gyro clock from robot clock and if it is more than a set time set mstate=calibration
 
@@ -86,10 +86,9 @@ void NewGyro::periodicProcessing(int startupTime)
 				//std::cout << "time difference: " << timeDiff << std::endl;
 				if(time_span.count() > startupTime)
 				{
-
 					initializeGyro();
 					mState = CALIBRATING;
-					std::cout << "gyro state " << mState << std::endl;
+					//std::cout << "gyro state " << mState << std::endl;
 				}
 				break;
 			case CALIBRATING:
@@ -100,7 +99,7 @@ void NewGyro::periodicProcessing(int startupTime)
 					sum.setAxis(0,0,0);
 					count = 0;
 					mState = READY;
-					std::cout << "gyro state " << mState << std::endl;
+					//std::cout << "gyro state " << mState << std::endl;
 				}
 				break;
 			case READY:
@@ -227,6 +226,10 @@ void NewGyro::initializeGyro()
 
 }
 
+GyroAxis* NewGyro::getAxis()
+{
+	return &sum;
+}
 
 GyroAxis NewGyro::readGyroData() //read gyro status, read FIFO source, read GYRO_REGISTER_OUT_X_L
 {
@@ -267,7 +270,7 @@ GyroAxis NewGyro::readGyroData() //read gyro status, read FIFO source, read GYRO
 		    m_i2c.Read(GYRO_REGISTER_OUT_X_L | AUTO_INCREMENT, 6, discardedData);
 			sum.addAxis(data[0]*conversionFactor, data[1]*conversionFactor, data[2]*conversionFactor);
 			count++;
-			std::cout << "Gyro ACTUAL data: " << std::hex << data[2] <<  std::dec << std::endl;
+			//std::cout << "Gyro ACTUAL data: " << std::hex << data[2] <<  std::dec << std::endl;
 
 		}
 

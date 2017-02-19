@@ -1,28 +1,24 @@
-#include "Commands/TurnAndDrive.h"
+#include "Turn.h"
 
-TurnAndDrive::TurnAndDrive(double inDistance, double inAngle)
-    : distance(inDistance * PIDCON_INCHES * 1.185), angle(inAngle)
+Turn::Turn(double inAngle)
+    : angle(inAngle)
 {
     Requires(drive);
-    distancePid = NULL;
     anglePid = NULL;
     forceFinish = false;
 }
 
-void TurnAndDrive::Initialize()
+void Turn::Initialize()
 {
     SetTimeout(2.2);
-    drive->resetEncoders();
     drive->resetGyro();
 
-    distancePid = new WVPIDController(0.15, 0.0, 0.0, distance, false);
+
     anglePid = new WVPIDController(0.15, 0, 0, angle, false); // kp was 0.1 before,works for low bar
 }
 
-void TurnAndDrive::Execute()
+void Turn::Execute()
 {
-    double current_distance = drive->getDistance();
-    double pwm_val = distancePid->Tick(current_distance);
     double current_angle = (drive->getGyroAngle());
     double rotateVal = anglePid->Tick(current_angle);
 
@@ -34,16 +30,16 @@ void TurnAndDrive::Execute()
     //std::cout << "Gyro PV: " << current_angle << std::endl;
    // std::cout << "Gyro error: " << anglePid->GetError() << std::endl;
 
-    drive->arcadeDrive(DriveTrain::Limit(pwm_val, 0.3), -DriveTrain::Limit(rotateVal, 0.4));
+    drive->arcadeDrive(0, -DriveTrain::Limit(rotateVal, 0.4));
 }
 
-bool TurnAndDrive::IsFinished()
+bool Turn::IsFinished()
 {
     bool finished =
     (
         (
-            (fabs(distancePid->GetError()) < 0.005)
-            && (fabs(anglePid->GetError()) < 1)
+
+            (fabs(anglePid->GetError()) < 1)
             //&& (fabs(drive->GetRate()) < 1e-3)
         )
     );
@@ -51,17 +47,17 @@ bool TurnAndDrive::IsFinished()
     return finished || forceFinish;
 }
 
-void TurnAndDrive::ForceFinish()
+void Turn::ForceFinish()
 {
     forceFinish = true;
 }
 
-void TurnAndDrive::End()
+void Turn::End()
 {
     drive->arcadeDrive(0, 0);
 }
 
-void TurnAndDrive::Interrupted()
+void Turn::Interrupted()
 {
 
 }

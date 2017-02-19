@@ -130,6 +130,7 @@ public:
 	void ready();
 	void checkForZAxis(int counterGyro);
 	GyroAxis readGyroData();
+	GyroAxis* getAxis();
 	void resetGyro()
 	{
 		sum.setAxis(0,0,0);
