@@ -4,11 +4,11 @@
 #include "../CommandBase.h"
 #include "CVDrive.h"
 
-using namespace std;
+//using namespace std;
 AutonomousLeft::AutonomousLeft(){
 
 	//AddSequential(new TurnAndDrive(50,0));
-	AddSequential(new CVDrive());
+	AddSequential(new TurnAndDrive(0,45));
 	//AddSequential(new Turn(45));
 }
 
