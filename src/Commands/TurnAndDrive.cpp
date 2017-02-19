@@ -15,7 +15,7 @@ void TurnAndDrive::Initialize()
     drive->resetEncoders();
     drive->resetGyro();
     distancePid = new WVPIDController(0.15, 0.0, 0.0, distance, false);
-    anglePid = new WVPIDController(0.05, 1e-2, 0, angle, false); // kp was 0.1 before,works for low bar
+    anglePid = new WVPIDController(0.15, 0, 0, angle, false); // kp was 0.1 before,works for low bar
 }
 
 void TurnAndDrive::Execute()
@@ -33,7 +33,7 @@ void TurnAndDrive::Execute()
     //std::cout << "Gyro PV: " << current_angle << std::endl;
    // std::cout << "Gyro error: " << anglePid->GetError() << std::endl;
 
-    drive->arcadeDrive(DriveTrain::Limit(pwm_val, 0.3), -DriveTrain::Limit(rotateVal, 0.5));
+    drive->arcadeDrive(DriveTrain::Limit(pwm_val, 0.3), -DriveTrain::Limit(rotateVal, 0.4));
 }
 
 bool TurnAndDrive::IsFinished()
@@ -42,7 +42,7 @@ bool TurnAndDrive::IsFinished()
     (
         (
             (fabs(distancePid->GetError()) < 0.005)
-            && (fabs(anglePid->GetError()) < 0.01)
+            && (fabs(anglePid->GetError()) < 1)
             //&& (fabs(drive->GetRate()) < 1e-3)
         )
     );

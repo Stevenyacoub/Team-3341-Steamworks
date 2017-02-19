@@ -2,9 +2,11 @@
 #include "../RobotMap.h"
 using namespace frc;
 
-Shooter::Shooter() : Subsystem("Shooter")
+Shooter::Shooter() : Subsystem("Shooter"), shooter(new CANTalon(SHOOTER))
 {
-	shooter = new CANTalon(LEFTSHOOTER); //SHOOTER is the pin number for the motor
+	shooter->SetControlMode(CANSpeedController::kPercentVbus);
+	shooter->SetFeedbackDevice(CANTalon::CtreMagEncoder_Relative);
+	shooter->ConfigLimitMode(CANSpeedController::kLimitMode_SrxDisableSwitchInputs);
 	// encoder = new Encoder(SHOOTERENCODERLEFT); // ENCODER is the pin number for the encoder
 }
 
@@ -13,27 +15,36 @@ void Shooter::setSpeed(double speed)
 	shooter->Set(speed);
 }
 
-void Shooter::setPIDConstants()
+double Shooter::getSpeed()
 {
-	shooter->SetP(0.5); // TODO: Find constants through testing
-	shooter->SetI(0);
-	shooter->SetD(0);
+	return shooter->GetSpeed();
 }
 
-// TODO: FInd out if this is needed
-/* void Shooter::InitDefaultCommand()
+double Shooter::getEncoderVel()
 {
-	// Set the default command for a subsystem here.
-	// SetDefaultCommand(new MySpecialCommand());
-} */
+	return shooter->GetEncVel();
+}
 
-Shooter::~Shooter() //destructor
+bool Shooter::disable(bool button)
 {
-	delete shooter;
+	return button;
+}
+
+void Shooter::setPIDConstants(double F, double P, double I, double D)
+{
+	shooter->SetF(F);
+	shooter->SetP(P); // TODO: Find constants through testing
+	shooter->SetI(I);
+	shooter->SetD(D);
+}
+
+/*Shooter::~Shooter() //destructor
+{
+	 delete shooter;
 	//delete encoder;
 	shooter = NULL;
 	// encoder = NULL;
-}
+} */
 
 // Put methods for controlling this subsystem
 // here. Call these from Commands.

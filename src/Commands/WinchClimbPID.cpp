@@ -19,15 +19,15 @@ void WinchClimbPID::Initialize()
 			/* use the low level API to set the quad encoder signal */
 
 			/* set the peak and nominal outputs, 12V means full */
-			_talon->ConfigNominalOutputVoltage(+0., -0.);
-			_talon->ConfigPeakOutputVoltage(+12., -12.);
+			//_talon->ConfigNominalOutputVoltage(+0., -0.);//TODO see if needed
+			//_talon->ConfigPeakOutputVoltage(+12., -12.);//TODO see if needed
 			/* set the allowable closed-loop error,
 			 * Closed-Loop output will be neutral within this range.
 			 * See Table in Section 17.2.1 for native units per rotation.
 			 */
-			_talon->SetAllowableClosedLoopErr(0); /* always servo */
+			//_talon->SetAllowableClosedLoopErr(0); /* always servo *///TODO see if needed
 			/* set closed loop gains in slot0 */
-			_talon->SelectProfileSlot(0);
+			//_talon->SelectProfileSlot(0);//TODO see if needed
 			_talon->SetF(0.0); // TODO: Set F constant through testing
 			_talon->SetP(0.1); // TODO: Set P constant through testing
 			_talon->SetI(0.0); // TODO: Set I constant through testing

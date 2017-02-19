@@ -20,12 +20,12 @@ public:
 	double findSpeed(double dist);
 
 private:
-	CANTalon* _talon;
-	std::string _sb;
+	//CANTalon* _talon;
+	//std::string _sb;
 	int _loops;
-	bool _lastButton1;
+	//bool _lastButton1;
 	/** save the target position to servo to */
-	double targetPositionRotations;
+	//double targetPositionRotations;
 	double currentSpeed;
 	double correctionValue;
 	double moveValue;
@@ -33,8 +33,11 @@ private:
 	double calculatedVal;
 	double encoderVal;
 	double goalSpeed;
+	//TODO why do we need this button here?
+	//The button should be instantiated in OI
+	//with this command.- Nir
+	Button* shooterButton;
 	WVPIDController* speedPID;
-	Shooter* shooter;
 	// LiveWindow* lw;
 };
 

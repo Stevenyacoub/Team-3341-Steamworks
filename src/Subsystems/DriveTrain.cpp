@@ -14,8 +14,8 @@ DriveTrain::DriveTrain() :
     encoderRight(new Encoder(ENCODER_RIGHT_1, ENCODER_RIGHT_2)), mult(1.0),
 	ticksToDistance(114), // 112 < ticksToDistance < 117
 	accel(),
-	gyro(new wvrobotics::GyroL3GD20H(I2C::kOnboard, 0x6b))//wvrobotic::GyroL3GD20H( wvrobotics::GyroL3GD20H::GyroL3GD20H))//,
-	//ultrasonicSensors()
+	gyro(new wvrobotics::NewGyro(I2C::kOnboard, 0x6b)),
+	axis(gyro->getAxis())
 {
     encoderLeft->SetDistancePerPulse(1.0);
     encoderRight->SetDistancePerPulse(1.0);
@@ -168,20 +168,17 @@ double DriveTrain::getLeftEncoderDistance()
 	//TODO negate this and the right one below
 	//return this->left->GetPosition();
 
-	return this->encoderLeft->GetDistance();
+	return -this->encoderLeft->GetDistance();
 }
 
 double DriveTrain::getRightEncoderDistance()
 {
-	return -this->encoderRight->GetDistance();
+	return this->encoderRight->GetDistance();
 }
 
 double DriveTrain::getGyroAngle()
 {
-	wvrobotics::GyroAxis axis;
-    gyro->getAngle(&axis);
-    axis.overrunofAxis();
-    return axis.getzAxis();
+    return axis->getzAxis();
 }
 
 void DriveTrain::resetGyro()

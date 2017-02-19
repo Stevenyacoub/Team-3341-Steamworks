@@ -1,4 +1,3 @@
-
 #include <memory>
 
 #include "CommandBase.h"
@@ -12,15 +11,101 @@
 #include "Commands/Forward.h"
 #include "Subsystems/DriveTrain.h"
 #include "Commands/AutonomousLeft.h"
+#include "Commands/AutonomousRight.h"
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core/core.hpp>
+using namespace frc;
 
 class Robot: public frc::IterativeRobot {
+
+private:
+	//wvrobotics::NewGyro* gyro;
+	//wvrobotics::GyroAxis axis;
+	int flag = 0;
+	int startupTime=5;
 public:
+
+	static void VisionThread3() {
+
+			// Get the USB camera from CameraServer
+			cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture("USB Camera 0", 0);
+			// Set the resolution
+			camera.SetResolution(640, 480);
+
+			// Get a CvSink. This will capture Mats from the Camera
+			cs::CvSink cvSink = CameraServer::GetInstance()->GetVideo();
+			// Setup a CvSource. This will send images back to the Dashboard
+			cs::CvSource outputStream = CameraServer::GetInstance()->PutVideo("USB Camera 0", 640, 480);
+
+			// Mats are very memory expensive. Lets reuse this Mat.
+			cv::Mat mat;
+
+			while (true) {
+				// Tell the CvSink to grab a frame from the camera and put it
+				// in the source mat.  If there is an error notify the output.
+				if (cvSink.GrabFrame(mat) == 0) {
+					// Send the output the error.
+					outputStream.NotifyError(cvSink.GetError());
+					// skip the rest of the current iteration
+					continue;
+				}
+				// Put a rectangle on the image
+				rectangle(mat, cv::Point(100, 100), cv::Point(400, 400),
+						cv::Scalar(255, 255, 255), 5);
+				// Give the output stream a new image to display
+				outputStream.PutFrame(mat);
+			}
+		}
+		static void VisionThread4() {
+
+
+			// Get the USB camera from CameraServer
+			cs::UsbCamera camera1 = CameraServer::GetInstance()->StartAutomaticCapture("USB Camera 1", 1);
+
+			// Set the resolution
+			camera1.SetResolution(640, 480);
+
+			// Get a CvSink. This will capture Mats from the Camera
+			cs::CvSink cvSink = CameraServer::GetInstance()->GetVideo();
+			// Setup a CvSource. This will send images back to the Dashboard
+			cs::CvSource outputStream = CameraServer::GetInstance()->PutVideo("USB Camera 1", 640, 480);
+
+
+			// Mats are very memory expensive. Lets reuse this Mat.
+			cv::Mat mat;
+
+			while (true) {
+				// Tell the CvSink to grab a frame from the camera and put it
+				// in the source mat.  If there is an error notify the output.
+				if (cvSink.GrabFrame(mat) == 0) {
+					// Send the output the error.
+					outputStream.NotifyError(cvSink.GetError());
+					// skip the rest of the current iteration
+					continue;
+				}
+				// Put a rectangle on the image
+				rectangle(mat, cv::Point(100, 100), cv::Point(400, 400),
+						cv::Scalar(255, 255, 255), 5);
+				// Give the output stream a new image to display
+				outputStream.PutFrame(mat);
+			}
+		}
 	void RobotInit() override {
 		CommandBase::initialize();
-		//chooser.AddDefault("Default Auto", new ExampleCommand());
-		// chooser.AddObject("My Auto", new MyAutoCommand());
+
+		turningCommand = new AutonomousLeft();
+		//drivingCommand = new AutonomousRight();
+		chooser.AddDefault("Turning", turningCommand);
+		//chooser.AddObject("Driving", drivingCommand);
 		frc::SmartDashboard::PutData("Auto Modes", &chooser);
-		autonomousCommand = new AutonomousLeft();
+		//gyro = new wvrobotics::NewGyro(I2C::kOnboard, 0x6b); //50 is the calibration sample size; can change it as desired
+		std::thread visionThread3(VisionThread3);
+		visionThread3.detach();
+		std::chrono::milliseconds timespan(5000); // 5000 milliseconds can be changed to a certain time
+		std::this_thread::sleep_for(timespan);
+		std::thread visionThread4(VisionThread4);
+		visionThread4.detach();
+
 		//foreward = new Forward();
 		//left = new Talon(0);
 		//right = new Talon(1);
@@ -32,11 +117,13 @@ public:
 	 * the robot is disabled.
 	 */
 	void DisabledInit() override {
-
+		CommandBase::drive->gyro->periodicProcessing(startupTime);
 	}
 
 	void DisabledPeriodic() override {
+		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::Scheduler::GetInstance()->Run();
+
 	}
 
 	/**
@@ -51,23 +138,33 @@ public:
 	 * to the if-else structure below with additional strings & commands.
 	 */
 	void AutonomousInit() override {
-		/* std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", "Default");
-		if (autoSelected == "My Auto") {
-			autonomousCommand.reset(new MyAutoCommand());
-		}
-		else {
-			autonomousCommand.reset(new ExampleCommand());
-		} */
+		CommandBase::drive->gyro->periodicProcessing(startupTime);
+		// std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", "Default");
+		//int mode = (int) chooser.GetSelected();
+		/*if (autoSelected == "Driving") {
+			autonomousCommand.reset(drivingCommand);
+		}*/
+
+		//else {
+			//autonomousCommand.reset(new ExampleCommand());
+		//}
 
 		//autonomousCommand.reset(chooser.GetSelected());
-
-		if (autonomousCommand != nullptr) {
-			autonomousCommand->Start();
+		/*if(autoSelected == "Driving"){
+			drivingCommand->Start();
+		}
+		else {
+			turningCommand->Start();
+		}*/
+		if (turningCommand != nullptr) {
+			turningCommand->Start();
 		}
 	}
 
 	void AutonomousPeriodic() override {
+		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::Scheduler::GetInstance()->Run();
+
 	}
 
 	void TeleopInit() override {
@@ -75,30 +172,41 @@ public:
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (autonomousCommand != nullptr) {
-			autonomousCommand->Cancel();
+		/*std::string autoSelected = frc::SmartDashboard::GetString("Auto Selector", "Default");
+		if(autoSelected == "Driving"){
+					drivingCommand->Cancel();
+				}
+				else {
+					turningCommand->Cancel();
+				}*/
+		if(turningCommand != nullptr){
+			turningCommand->Cancel();
 		}
 	}
 
 	void TeleopPeriodic() override {
+		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::Scheduler::GetInstance()->Run();
+
+		//std::cout<<CommandBase::drive->getGyroAngle()<<std::endl;
 		frc::SmartDashboard::PutNumber("EncoderTest", CommandBase::drive->getLeftEncoderDistance());
 		frc::SmartDashboard::PutNumber("EncoderRight", CommandBase::drive->getRightEncoderDistance());
 		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
-				frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
-				frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
-				frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
+		frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
+		frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
+		frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
+
+
 	}
 
 	void TestInit() override {
 
-		//foreward->Start();
-		//CommandBase::drive->setSpeedLeft(0.5);
-		//CommandBase::drive->setSpeedRight(-0.5);
+
 	}
 
 	void TestPeriodic() override {
 		frc::Scheduler::GetInstance()->Run();
+		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
 		frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
 		frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
@@ -111,7 +219,8 @@ public:
 	}
 
 private:
-	CommandGroup* autonomousCommand;
+	CommandGroup* turningCommand;
+	//CommandGroup* drivingCommand;
 	frc::SendableChooser<frc::Command*> chooser;
 	//Command* foreward;
 	//Talon* left;
