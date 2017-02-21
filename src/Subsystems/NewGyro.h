@@ -116,7 +116,7 @@ private:
     std::clock_t clock_gyro;
     std::chrono::high_resolution_clock::time_point t_start;
     std::chrono::high_resolution_clock::time_point gyroFinal;
-    int TOTAL_COUNT = 50;
+    int TOTAL_COUNT = 200;
     const unsigned char ADDRESS = 0xF;
     unsigned char whoAmI = 0b11010111;
     bool isVerified;

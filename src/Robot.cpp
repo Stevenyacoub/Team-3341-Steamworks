@@ -124,6 +124,14 @@ public:
 		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::Scheduler::GetInstance()->Run();
 
+		frc::SmartDashboard::PutNumber("Gyro", CommandBase::drive->getGyroAngle());
+		frc::SmartDashboard::PutNumber("EncoderTest", CommandBase::drive->getLeftEncoderDistance());
+		frc::SmartDashboard::PutNumber("EncoderRight", CommandBase::drive->getRightEncoderDistance());
+		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());
+		frc::SmartDashboard::PutNumber("CVGearDistance",NetworkTablesInterface::getGearDistance());
+		frc::SmartDashboard::PutNumber("CVGearAltitude", NetworkTablesInterface::getGearAltitude());
+		frc::SmartDashboard::PutNumber("CVGearAzimuth", NetworkTablesInterface::getGearAzimuth());
+
 	}
 
 	/**
@@ -188,7 +196,7 @@ public:
 		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::Scheduler::GetInstance()->Run();
 
-		//std::cout<<CommandBase::drive->getGyroAngle()<<std::endl;
+		frc::SmartDashboard::PutNumber("Gyro", CommandBase::drive->getGyroAngle());
 		frc::SmartDashboard::PutNumber("EncoderTest", CommandBase::drive->getLeftEncoderDistance());
 		frc::SmartDashboard::PutNumber("EncoderRight", CommandBase::drive->getRightEncoderDistance());
 		frc::SmartDashboard::PutBoolean("CVGearFound", NetworkTablesInterface::gearFound());

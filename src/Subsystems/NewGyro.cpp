@@ -79,7 +79,6 @@ void NewGyro::periodicProcessing(int startupTime)
 				std::cout << "Your gyro is not connected."<< std::endl;
 				break;
 			case INITIALIZATION:
-
 				time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
 				//std::cout << "It took me " << time_span.count() << " seconds" << std::endl;
 				//timeDiff = clock_initial - clock_gyro;

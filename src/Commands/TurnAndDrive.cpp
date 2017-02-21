@@ -26,8 +26,8 @@ void TurnAndDrive::Execute()
     double rotateVal = anglePid->Tick(current_angle);
 
     std::cout << "ERROR!!!!: " << distancePid->GetError() << std::endl;
-    std::cout << "curr_dist: " << drive->getDistance() << std::endl;
-    std::cout << "pwm: " << pwm_val << std::endl;
+    std::cout << "curr_dist: " << current_angle << std::endl;
+   //std::cout << "pwm: " << pwm_val << std::endl;
 
 
     //std::cout << "Gyro PV: " << current_angle << std::endl;
