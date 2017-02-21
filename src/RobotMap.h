@@ -36,5 +36,8 @@ const double PIDCON_INCHES = 0.13617;//inches
 const double CLICKS_TO_METERS = 0.0008842593;
 const double MIN_DIST_ERROR_CV = 0.2;
 const double MIN_ANGLE_ERROR_CV = 0.5;
+const int WINCH_PDP_PORT = 15;
+const int WINCH_CAN_ID = 1;
+const int MOTORPORT = 1;
 
 #endif

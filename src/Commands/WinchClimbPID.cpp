@@ -1,3 +1,6 @@
+/*
+
+
 #include "WinchClimbPID.h"
 
 WinchClimbPID::WinchClimbPID()
@@ -15,7 +18,7 @@ WinchClimbPID::WinchClimbPID()
 void WinchClimbPID::Initialize()
 {
 	/* lets grab the 360 degree position of the MagEncoder's absolute position */
-			int absolutePosition = _talon->GetPulseWidthPosition() & 0xFFF; /* mask out the bottom12 bits, we don't care about the wrap arounds */
+			//int absolutePosition = _talon->GetPulseWidthPosition() & 0xFFF; /* mask out the bottom12 bits, we don't care about the wrap arounds */
 			/* use the low level API to set the quad encoder signal */
 
 			/* set the peak and nominal outputs, 12V means full */
@@ -26,7 +29,7 @@ void WinchClimbPID::Initialize()
 			 * See Table in Section 17.2.1 for native units per rotation.
 			 */
 			//_talon->SetAllowableClosedLoopErr(0); /* always servo *///TODO see if needed
-			/* set closed loop gains in slot0 */
+			/* set closed loop gains in slot0
 			//_talon->SelectProfileSlot(0);//TODO see if needed
 			_talon->SetF(0.0); // TODO: Set F constant through testing
 			_talon->SetP(0.1); // TODO: Set P constant through testing
@@ -69,3 +72,4 @@ void WinchClimbPID::Interrupted()
 {
 
 }
+*/

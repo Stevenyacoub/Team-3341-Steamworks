@@ -1,3 +1,6 @@
+
+/*
+
 #ifndef WinchClimbPID_H
 #define WinchClimbPID_H
 
@@ -11,7 +14,7 @@ private:
 	std::string _sb;
 	int _loops;
 	bool _lastButton1;
-	/** save the target position to servo to */
+	/** save the target position to servo to
 	double targetPositionRotations;
 	double currentPoint;
 	double setPoint;
@@ -30,3 +33,4 @@ public:
 };
 
 #endif  // WinchClimbPID_H
+*/

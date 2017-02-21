@@ -2,6 +2,7 @@
 #define SetShooterSpeed_H
 
 #include "../CommandBase.h"
+#include "OI.h"
 #include "../Subsystems/Shooter.h"
 #include "../Utilities/WVPIDController.h"
 #include "CANTalon.h"

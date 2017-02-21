@@ -14,6 +14,9 @@
 #include "Commands/AutonomousRight.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
+#include "Commands/WinchPositionControlPID.h"
+#include "Subsystems/Winch.h"
+
 using namespace frc;
 
 class Robot: public frc::IterativeRobot {
@@ -23,6 +26,8 @@ private:
 	//wvrobotics::GyroAxis axis;
 	int flag = 0;
 	int startupTime=5;
+	std::unique_ptr<Command> autonomousCommand;
+	Shooter* shooter;
 public:
 
 	static void VisionThread3() {
@@ -94,6 +99,7 @@ public:
 		CommandBase::initialize();
 
 		turningCommand = new AutonomousLeft();
+		shooter = new Shooter();
 		//drivingCommand = new AutonomousRight();
 		chooser.AddDefault("Turning", turningCommand);
 		//chooser.AddObject("Driving", drivingCommand);
@@ -195,6 +201,13 @@ public:
 	void TeleopPeriodic() override {
 		CommandBase::drive->gyro->periodicProcessing(startupTime);
 		frc::Scheduler::GetInstance()->Run();
+		frc::SmartDashboard::PutNumber("Encoder", shooter->getEncoderVel());
+		        shooter->setPIDConstants(1, 1, 0, 0);
+		        shooter->setSpeed(15000);
+		        std::cout << "Speed: " << shooter->getSpeed() << std::endl;
+		        std::cout << "shooter found" << std::endl;
+		frc::SmartDashboard::PutNumber("CANTalon 1 Current", CommandBase::winch->getCurrent());
+		frc::Scheduler::GetInstance()->Run();
 
 		frc::SmartDashboard::PutNumber("Gyro", CommandBase::drive->getGyroAngle());
 		frc::SmartDashboard::PutNumber("EncoderTest", CommandBase::drive->getLeftEncoderDistance());
@@ -208,6 +221,8 @@ public:
 	}
 
 	void TestInit() override {
+		CommandBase::winch->getCurrent();
+		Command* autonomousCommand;
 
 
 	}

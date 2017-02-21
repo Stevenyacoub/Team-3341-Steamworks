@@ -5,7 +5,7 @@
  *      Author: danie
  */
 
-
+/*
 #ifndef SRC_NewNavigateCV_H_
 #define SRC_NewNavigateCV_H_
 
@@ -68,3 +68,4 @@ public:
 };
 
 #endif /* SRC_NewNavigateCV_H_ */
+

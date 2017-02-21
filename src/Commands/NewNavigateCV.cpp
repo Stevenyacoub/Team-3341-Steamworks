@@ -1,10 +1,14 @@
 /*
+
+
  * NewNavigateCV.cpp
  *
  *  Created on: Jan 14, 2017
- *      Author: Sauhaarda Chowdhuri + Daniel Ryu + Dhruti Padya
- */
+ *      Author: Sauhaarda Chowdhuri + Daniel Ryu + Dhruti Pandya
 
+*/
+
+/*
 #include "NewNavigateCV.h"
 #include <iostream>
 #include <math.h>
@@ -24,6 +28,8 @@ NewNavigateCV::NewNavigateCV(){
 	distGoal = angleGoal = 0;
 	leftDistance = 0;
 	rightDistance = 0;
+
+
 
 	angle = 0;
 	power = 0;
@@ -166,3 +172,5 @@ NewNavigateCV::~NewNavigateCV(){
 	delete distPID;
 	delete anglePID;
 }
+
+*/
