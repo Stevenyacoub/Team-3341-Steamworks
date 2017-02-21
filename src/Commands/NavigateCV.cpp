@@ -62,7 +62,7 @@ void NavigateCV::Execute(){
 			cout << "CV Azimuth:\t" << angleGoal << endl;
 #endif
 
-			if(distGoal > 0,2){ // Need to continue
+			if(distGoal > 0.2){ // Need to continue
 				// Initialize PIDs with CV Data
 				distPID->SetSetPoint(distGoal);
 				anglePID->SetSetPoint(angleGoal);
@@ -120,7 +120,7 @@ void NavigateCV::Execute(){
 #endif
 
 			// Tick PIDs
-			power =  distPID->Tick((abs(leftDistance)+abs(rightDistance))/2.0);
+			power =  abs(distPID->Tick((abs(leftDistance)+abs(rightDistance))/2.0));
 			angle = anglePID->Tick(newGyroVal);
 
 #ifdef DEBUG
