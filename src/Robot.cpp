@@ -57,8 +57,6 @@ public:
 			}
 		}
 		static void VisionThread4() {
-
-
 			// Get the USB camera from CameraServer
 			cs::UsbCamera camera1 = CameraServer::GetInstance()->StartAutomaticCapture("USB Camera 1", 1);
 

@@ -23,7 +23,7 @@
 //const int MOTORPORT = 0;
 const int WINCH_ENCODER1 = 40;
 const int WINCH_ENCODER2 = 41;
-const int WINCH_MOTOR = 43;
+const int WINCH_MOTOR = 0;
 const double SHOOTER_ANGLE = 33;//set this to the constant angle
 const double TARGET_HEIGHT = 7;//whatever the height is
 const double ENCODER_RIGHT_1=0;
@@ -31,10 +31,13 @@ const double ENCODER_RIGHT_2=1;
 const double ENCODER_LEFT_1=2;
 const double ENCODER_LEFT_2=3;
 //TODO init the correct TalonSRX IDs here
-const double SHOOTER = 34; //change to 1 for RoboRIO #1
+const double SHOOTER = 2; //change to   1 for RoboRIO #1
 const double PIDCON_INCHES = 0.13617;//inches
 const double CLICKS_TO_METERS = 0.0008842593;
 const double MIN_DIST_ERROR_CV = 0.2;
 const double MIN_ANGLE_ERROR_CV = 0.5;
 
+
+//intake 3
+//shooter 2
 #endif

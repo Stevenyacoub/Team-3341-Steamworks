@@ -22,8 +22,8 @@ class NavigateCV: public CommandBase{
 
 private:
 
-	const double IIR_CONST = 0.5;
-	const double DRIVE_TIME = 1;
+	const double IIR_CONST = 0.7;
+	const double DRIVE_TIME = 0.5;
 
 	enum State {CV, INNER_LOOP, END};
 	State state;
